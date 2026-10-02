@@ -127,7 +127,10 @@ days:
     formats:
       funny_poll: >-
         A humorous REGULAR poll (type "poll", no correct answer) about learner life, exam pain, or the weirdness
-        of English. Options are jokes but use real B2+ language (idioms, collocations). Optional 1–2 line intro.
+        of English. Every option is built on a real B2–C1 idiom or collocation (e.g. "draw a blank", "wing it",
+        "clutch at straws", "play for time") so the joke teaches something. Optional intro of max 2 dry lines that
+        does NOT repeat the poll question and has no comfort lines ("No shame", "We've all been there").
+        Optional second text message: the idioms from the options with 3–6 word meanings.
       meme: >-
         A meme about learning English or exams using one of the available templates. Top/bottom text in
         B2+ English hiding a language point (idiom, false friend, grammar trap). The caption states the
