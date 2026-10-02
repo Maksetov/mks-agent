@@ -108,8 +108,11 @@ days:
     exam_style: strict
     formats:
       ml_reading_part: >-
-        A compressed real-format Multi Level Reading item: Part 3 (headings) or Part 4 (MCQ/TFNG) style.
-        Text 150–220 words + 2–3 quizzes in exact exam style.
+        A compressed Multi Level Reading Part 4 item: text 180–230 words, then exactly 3 quizzes:
+        (1) MCQ on a detail that is paraphrased, not copied; (2) MCQ on inference or the writer's attitude;
+        (3) a TRUE / FALSE / NOT GIVEN statement (options exactly TRUE, FALSE, NOT GIVEN) — prefer NOT GIVEN or FALSE
+        that a careless reader gets wrong. Don't put the title or "Read the text" instructions in a separate message;
+        put the day label, one dry instruction line and the text in ONE text message.
       ml_listening_part: >-
         A Multi Level Listening Part 4–6 style audio (90 seconds max) + 2–3 quizzes. Processing and inference,
         not just speed. Do NOT print the script.

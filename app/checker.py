@@ -16,6 +16,17 @@ BANNED = [
 ]
 
 
+ABSOLUTES = re.compile(
+    r"\b(all|every|always|never|no|none|nothing|only|completely|entirely|permanently|totally|"
+    r"eliminat\w*|solv\w*|guarantee\w*|impossible|cannot|most)\b", re.I)
+TFNG = {"true", "false", "not given"}
+HEDGED_NEG = re.compile(r"\bnot\s+(all|every|always|only|completely|entirely|necessarily|most)\b", re.I)
+
+
+def _extreme(text: str) -> bool:
+    return bool(ABSOLUTES.search(HEDGED_NEG.sub("", text)))
+
+
 def sanitize_html(text: str) -> str:
     """Escape everything, then re-allow only Telegram-safe tags."""
     out = html.escape(text or "", quote=False)
@@ -89,6 +100,12 @@ def hard_checks(payload: dict, day: dict) -> list[str]:
                 exp = m.get("explanation", "")
                 if not exp or len(exp) > 200 or exp.count("\n") > 2:
                     issues.append(f"{where}: explanation must be 1–200 chars, max 2 line breaks.")
+                # giveaway distractors: wrong options are extreme/absolute, the key is the only hedged one
+                if {o.strip().lower() for o in opts} - TFNG and day["skill"] != "grammar":
+                    extreme = sum(1 for i, o in enumerate(opts) if i != k and _extreme(o))
+                    if extreme >= 2 and not _extreme(opts[k]):
+                        issues.append(f"{where}: {extreme} distractors are extreme/absolute statements and the key "
+                                      "is the only hedged one — answerable by elimination without reading.")
                 # length clue: correct answer clearly the longest
                 others = [len(o) for i, o in enumerate(opts) if i != k]
                 if others and len(opts[k]) > 1.4 * max(others) and len(opts[k]) - max(others) > 12:
@@ -130,10 +147,17 @@ BLIND_SYSTEM = """You are a strict C2-level English examiner taking a test item 
 Read the context and the question, then choose the single best option.
 Return ONLY JSON: {"answer_index": <0-based int>, "ambiguous": <true if 2+ options are defensible>, "reason": "<max 25 words>"}"""
 
+GUESS_SYSTEM = """You are a test-wise B1 student. You have NOT seen the text or audio the question is about.
+Using only the question and options (tone, extreme wording, common sense, option length), pick the most likely answer.
+Return ONLY JSON: {"answer_index": <0-based int>, "confident": <true only if the options themselves make the answer obvious>}"""
+
 REVIEW_SYSTEM = """You are the quality editor for Multi Level MKS, a B2–C2 English exam-prep Telegram channel.
 Check the draft below against: (1) level is B2+ and difficulty comes from meaning, not rare words;
 (2) English is natural and error-free (except deliberate errors in find-the-mistake items);
-(3) every quiz has exactly one defensible answer, plausible distractors, no clue from length or grammar;
+(3) every quiz has exactly one defensible answer and no clue from length, grammar or extreme wording;
+distractors must be tempting for a B2 reader (partly true, use words from the text, mention-then-correct,
+right info wrong claim). Fail it if a B1 student could pass by eliminating obviously absurd options;
+(3b) quizzes in one draft test different things (e.g. gist vs detail vs inference vs NOT GIVEN), not the same idea twice;
 (4) the content matches the requested format description; (5) voice: dry, direct, slightly sarcastic,
 no motivational fluff, no childish tone; (6) all messages are the same skill and connected.
 Only flag real problems. Return ONLY JSON: {"pass": <bool>, "issues": ["<specific, fixable issue>", ...]}"""
@@ -157,7 +181,13 @@ def blind_solve(payload: dict) -> list[str]:
         if m.get("type") != "quiz":
             continue
         opts = "\n".join(f"{j}) {o}" for j, o in enumerate(m["options"]))
-        user = f"CONTEXT:\n{_context_for(msgs, i) or '(none)'}\n\nQUESTION:\n{m['question']}\n\nOPTIONS:\n{opts}"
+        ctx = _context_for(msgs, i)
+        if ctx:  # if it can be answered WITHOUT the text, the item is broken
+            g = llm.chat_json(CHECK_MODEL, GUESS_SYSTEM, f"QUESTION:\n{m['question']}\n\nOPTIONS:\n{opts}", temperature=0)
+            if g.get("answer_index") == m["correct_option_id"] and g.get("confident"):
+                issues.append(f"Quiz '{m['question'][:60]}…' is answerable without reading/listening "
+                              "(distractors too weak or too extreme). Make distractors plausible misreadings of the text.")
+        user = f"CONTEXT:\n{ctx or '(none)'}\n\nQUESTION:\n{m['question']}\n\nOPTIONS:\n{opts}"
         res = llm.chat_json(CHECK_MODEL, BLIND_SYSTEM, user, temperature=0)
         ans = res.get("answer_index")
         if res.get("ambiguous"):

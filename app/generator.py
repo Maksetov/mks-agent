@@ -54,10 +54,25 @@ def _user_prompt(d: date, day: dict, fmt: str, feedback: list[str] | None) -> st
     return "\n\n".join(parts)
 
 
-def _clean(payload: dict) -> dict:
+def _shuffle_quiz(m: dict) -> None:
+    """Randomise the key's position (models love option A). TFNG keeps its fixed order."""
+    opts = m.get("options")
+    k = m.get("correct_option_id")
+    if not isinstance(opts, list) or not isinstance(k, int) or not 0 <= k < len(opts):
+        return
+    if {o.strip().lower() for o in opts} <= {"true", "false", "not given"}:
+        return
+    key = opts[k]
+    random.shuffle(opts)
+    m["correct_option_id"] = opts.index(key)
+
+
+def _clean(payload: dict, shuffle: bool = True) -> dict:
     payload.setdefault("messages", [])
     for m in payload["messages"]:
         m.pop("file", None)  # never trust file paths from the model
+        if shuffle and m.get("type") == "quiz":
+            _shuffle_quiz(m)
     return payload
 
 
@@ -93,10 +108,10 @@ def revise(draft_id: int, instruction: str) -> int:
     dr = db.get(draft_id)
     d = date.fromisoformat(dr["post_date"])
     day, fmt = day_cfg(d), dr["format"]
-    current = _clean(json.loads(json.dumps(dr["payload"])))
+    current = _clean(json.loads(json.dumps(dr["payload"])), shuffle=False)
     user = (f"{_user_prompt(d, day, fmt, None)}\n\nCURRENT DRAFT JSON:\n"
             f"{json.dumps(current, ensure_ascii=False, indent=1)}\n\nEDITOR'S INSTRUCTION:\n{instruction}")
-    payload = _clean(llm.chat_json(GEN_MODEL, _system() + REVISE_SYSTEM_TAIL, user, temperature=0.4))
+    payload = _clean(llm.chat_json(GEN_MODEL, _system() + REVISE_SYSTEM_TAIL, user, temperature=0.4), shuffle=False)
     if not payload.get("messages"):
         raise RuntimeError("Edit failed: the model returned nothing usable. Draft unchanged.")
     issues = check(payload, day, fmt)

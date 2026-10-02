@@ -14,6 +14,12 @@ VOICE
 
 QUESTION QUALITY (non-negotiable)
 - Exactly one defensible correct answer. Distractors plausible and tempting for a real reason.
+- DISTRACTORS (most important rule): a B2 reader must be genuinely tempted. Build them from the text:
+  partly true; uses the text's own words with a different meaning; true in the text but not the answer to THIS question;
+  mentioned then corrected; right detail, wrong cause/effect. NEVER write absurd or extreme options
+  ("X has permanently solved…", "Y has no effect…") — if a student can win by eliminating nonsense, the item is worthless.
+- Don't make the key the only hedged/balanced option while the others are absolute.
+- Two quizzes in one post must test different things (gist, detail via paraphrase, inference, writer's attitude, NOT GIVEN).
 - No accidental clues: the correct option must not be noticeably longer, more detailed, or the only grammatically fitting one.
 - Natural, current English. Correct facts. No ambiguity unless ambiguity is the point.
 - Vary the position of the correct option.
