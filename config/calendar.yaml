@@ -1,0 +1,131 @@
+# Multi Level MKS — Agent Max calendar. Edit freely; restart the service after changes.
+timezone: Asia/Tashkent
+
+schedule:
+  generate_at: "08:00"          # drafts land in your DM
+  remind_at: ["18:00", "19:30"] # nudge if still unapproved
+  publish_at: "20:00"           # every day
+  gap_between_messages_sec: 60  # message 2 follows message 1 after ~1 min
+
+rules:
+  no_repeat_format_days: 14     # don't reuse a format within this window if avoidable
+  max_messages: 4               # per day; all same skill, all related
+  max_attempts: 3               # generate -> check -> regenerate cycles before showing you with warnings
+  avoid_topics_lookback: 40     # recent topics shown to the AI so it doesn't repeat itself
+
+days:
+  mon:
+    skill: speaking
+    label: "🗣 Speaking"
+    formats:
+      phrase_upgrade: >-
+        Take one flat, overused phrase learners say in Speaking. Give 3 natural B2–C1 replacements,
+        each with a short spoken example. Then a quiz: which replacement fits a given situation best
+        (register or connotation must decide it, not grammar).
+      band_transform: >-
+        A Band 6 sentence on a speaking topic -> a Band 8 version. Show both, then 2–3 lines on what
+        exactly changed (precision, collocation, structure). Then a quiz: which of 4 upgrades is natural
+        AND keeps the meaning (distractors: unnatural, over-formal/essay-like, meaning-shifted).
+      fluency_filler: >-
+        One natural discourse marker for buying time or structuring a spoken answer (never "well"/"um").
+        Show when to use it in a Part 1.1 or Part 3 answer, plus one typical misuse. Then a quiz:
+        in which reply does it fit naturally.
+      speaking_challenge: >-
+        A Multi Level speaking prompt (Part 1.1, Part 2 or Part 3 style). Give the prompt, a 40–60 second
+        model answer that sounds spoken (not like an essay) with 3 useful phrases in <b>, and a one-line
+        challenge for readers to record their own answer. No quiz needed.
+
+  tue:
+    skill: reading
+    label: "📖 Reading"
+    formats:
+      mini_text_mcq: >-
+        A 120–180 word authentic-looking text (article, report, blog extract). Then 2 quizzes:
+        one inference, one paraphrase-based detail. Distractors reuse words from the text but mean something else.
+      tfng: >-
+        A 120–180 word text, then 2 quizzes with options exactly TRUE / FALSE / NOT GIVEN.
+        At least one must be NOT GIVEN that a careless reader would mark FALSE.
+        TRUE = supported, FALSE = contradicted, NOT GIVEN = cannot be established.
+      headings: >-
+        Two short paragraphs (60–90 words each), labelled A and B. One quiz: best heading for paragraph A
+        from 4 headings. One distractor fits paragraph B; one reuses a keyword from A with the wrong meaning.
+      paraphrase_hunt: >-
+        One sentence from a text. Quiz: which option is a true paraphrase. Distractors: same words with a
+        different meaning; partial meaning; reversed cause/effect or comparison.
+
+  wed:
+    skill: listening
+    label: "🎧 Listening"
+    media: tts
+    formats:
+      audio_quiz: >-
+        An audio monologue of 60–90 seconds when spoken (announcement, talk extract, voicemail).
+        Then 2 quizzes: one detail with a distractor that is mentioned then corrected,
+        one about the speaker's attitude or purpose. Do NOT print the script in any text message.
+      dialogue_mcq: >-
+        An audio dialogue of 60–90 seconds between speakers A and B. Then 2 quizzes: what they finally decide
+        (after a change of plan), and an implied attitude or opinion. Do NOT print the script.
+      note_completion: >-
+        An audio talk of 60–90 seconds, then a text message with short notes containing 3 numbered gaps
+        (1–3 words each), then a final text message with the answers inside <tg-spoiler>.
+        Include names/numbers that are mentioned and then corrected.
+
+  thu:
+    skill: grammar
+    label: "📑 Grammar"
+    formats:
+      find_mistake: >-
+        Quiz only (plus an optional 1–2 line intro): 4 options, each a full sentence; exactly one contains a
+        subtle B2–C1 error (not spelling, not punctuation). Explanation names the rule in one line.
+      grammar_trap: >-
+        One structure B2+ learners misuse (inversion, mixed conditionals, participle clauses,
+        "would rather" + past, articles with abstract nouns, etc.). Explanation in max 5 lines, then a quiz.
+      choose_correct: >-
+        One context-rich sentence with a gap. 4 options that are all grammatical in isolation;
+        only one fits the context and meaning (tense, aspect, modality).
+
+  fri:
+    skill: writing
+    label: "✍️ Writing"
+    formats:
+      structure_breakdown: >-
+        A Multi Level writing task (informal letter, formal letter, or Part 2 blog/forum post) with a realistic
+        prompt. Paragraph-by-paragraph skeleton with one model sentence per paragraph. Then a quiz:
+        which opening sentence fits the task's register.
+      register_switch: >-
+        An informal sentence -> its formal-letter equivalent (or the reverse). Then a quiz: which of 4 versions
+        is appropriately formal (distractors: archaic/stiff, too casual, meaning changed).
+      idea_bank: >-
+        A Part 2 blog/forum topic. 3 sharp arguments, each with one C1 phrase in <b>.
+        Then a quiz: which argument is weakest or off-task for that question.
+      intro_fix: >-
+        A bloated, generic opening for a Multi Level writing task -> a tight version. 2 lines on why.
+        Then a quiz: pick the strongest opening sentence.
+
+  sat:
+    skill: test
+    label: "⭐ Test"
+    exam_style: strict
+    formats:
+      ml_reading_part: >-
+        A compressed real-format Multi Level Reading item: Part 3 (headings) or Part 4 (MCQ/TFNG) style.
+        Text 150–220 words + 2–3 quizzes in exact exam style.
+      ml_listening_part: >-
+        A Multi Level Listening Part 4–6 style audio (90 seconds max) + 2–3 quizzes. Processing and inference,
+        not just speed. Do NOT print the script.
+      mixed_mini_mock: >-
+        3 quizzes only, exam difficulty B2–C1: one vocabulary in context, one grammar in context,
+        one reading paraphrase (include the short sentence in the question).
+
+  sun:
+    skill: light
+    label: "ツ Light"
+    effort: low
+    formats:
+      funny_poll: >-
+        A humorous REGULAR poll (type "poll", no correct answer) about learner life, exam pain, or the weirdness
+        of English. Options are jokes but use real B2+ language (idioms, collocations). Optional 1–2 line intro.
+      meme: >-
+        A meme about learning English or exams using one of the available templates. Top/bottom text in
+        B2+ English hiding a language point (idiom, false friend, grammar trap). The caption states the
+        language point in 1–2 lines.

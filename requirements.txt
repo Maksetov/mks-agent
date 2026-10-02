@@ -1,0 +1,5 @@
+python-telegram-bot[job-queue]>=21,<22
+openai>=1.40
+pyyaml>=6
+python-dotenv>=1
+pillow>=10.1

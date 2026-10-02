@@ -1,0 +1,16 @@
+[Unit]
+Description=MKS Channel Agent (Agent Max)
+After=network-online.target
+Wants=network-online.target
+# stop after 5 crashes in 5 min instead of crash-looping forever (the pm2 lesson)
+StartLimitIntervalSec=300
+StartLimitBurst=5
+
+[Service]
+WorkingDirectory=/root/mks-agent
+ExecStart=/root/mks-agent/venv/bin/python main.py
+Restart=on-failure
+RestartSec=15
+
+[Install]
+WantedBy=multi-user.target
